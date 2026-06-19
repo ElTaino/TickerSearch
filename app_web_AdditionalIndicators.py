@@ -4,6 +4,7 @@ from plotly.subplots import make_subplots
 import plotly.graph_objects as go
 
 # Configure the Web Page Layout
+# Test Git Commit after Clone
 st.set_page_config(page_title="Stock Analytics Dashboard", layout="wide")
 st.title("📈 Advanced Technical Analysis Dashboard")
 st.markdown("This web app fetches live stock data from Yahoo Finance and calculates multiple real-time technical indicators.")
@@ -104,7 +105,7 @@ if ticker_symbol:
                 yaxis_title="Price (USD)",
                 yaxis2_title="Volume",
                 yaxis3_title="RSI Value",
-                yaxis3_range=,
+                yaxis3_range=[10, 90],
                 height=800, # Expanded canvas height to cleanly hold all 3 graphs
                 hovermode="x unified", # Locks single tracker vertical bar across all 3 charts
                 legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
