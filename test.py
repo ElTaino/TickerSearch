@@ -2,6 +2,7 @@ import streamlit as st
 import yfinance as yf
 from plotly.subplots import make_subplots
 import plotly.graph_objects as go
+import pandas as pd
 
 # Configure the Web Page Layout
 st.set_page_config(page_title="Stock Analytics Dashboard", layout="wide")
@@ -20,11 +21,17 @@ if ticker_symbol:
     try:
         # Fetch Data via API
         with st.spinner(f"Loading market metrics for {ticker_symbol}..."):
-            stock_data = yf.download(ticker_symbol, period=time_period, interval="1d")
-        
+          stock_data = yf.download(ticker_symbol, period=time_period, interval="1d")
+
         if stock_data.empty:
             st.error("Invalid ticker symbol or no data found for this period.")
         else:
+            # 🌟 FIX: Drop the multi-index ticker level so columns become flat strings again
+            if isinstance(stock_data.columns, pd.MultiIndex):
+                stock_data.columns = stock_data.columns.droplevel('Ticker')
+            
+    # Mathematical RSI Calculations continue normally below...
+
             # Mathematical RSI Calculations
             delta = stock_data['Close'].diff()
             gain = delta.clip(lower=0)
