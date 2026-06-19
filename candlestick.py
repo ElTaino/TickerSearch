@@ -188,7 +188,19 @@ if ticker_symbol:
                                 row_heights=[0.45, 0.15, 0.20, 0.20])
             
             # --- PANEL 1: Main Price Chart + MA Overlays + Bollinger Bands ---
-            fig.add_trace(go.Scatter(x=dates, y=close_prices, name='Actual Close Price', line=dict(color='#1f77b4', width=2)), row=1, col=1)
+            # 🌟 UPGRADE: Replaced go.Scatter line with a full interactive Candlestick trace
+            fig.add_trace(go.Candlestick(
+                x=dates,
+                open=open_prices,
+                high=stock_data['High'].values.flatten(),
+                low=stock_data['Low'].values.flatten(),
+                close=close_prices,
+                name='OHLC Price',
+                increasing_line_color='#2ca02c',  # Solid green for up days
+                decreasing_line_color='#d62728'   # Solid red for down days
+            ), row=1, col=1)
+            
+            # Moving Average Overlays (Remain as lines mapped cleanly on top of candles)
             fig.add_trace(go.Scatter(x=dates, y=stock_data['MA20'].values.flatten(), name='20-Day MA', line=dict(color='#ff7f0e', width=1.5)), row=1, col=1)
             fig.add_trace(go.Scatter(x=dates, y=stock_data['MA50'].values.flatten(), name='50-Day MA', line=dict(color='#2ca02c', width=1.5)), row=1, col=1)
             
@@ -196,7 +208,7 @@ if ticker_symbol:
             fig.add_trace(go.Scatter(x=dates, y=stock_data['BB_Upper'].values.flatten(), name='BB Upper', line=dict(color='#bcbd22', width=1, dash='dash'), legendgroup="bb"), row=1, col=1)
             fig.add_trace(go.Scatter(x=dates, y=stock_data['BB_Middle'].values.flatten(), name='BB Middle', line=dict(color='#7f7f7f', width=1, dash='dot'), legendgroup="bb"), row=1, col=1)
             fig.add_trace(go.Scatter(x=dates, y=stock_data['BB_Lower'].values.flatten(), name='BB Lower', line=dict(color='#bcbd22', width=1, dash='dash'), legendgroup="bb"), row=1, col=1)
-
+            
             # --- PANEL 2: Volume Bar Graph ---
             fig.add_trace(go.Bar(x=dates, y=volume_values, name='Volume', marker_color=volume_colors, opacity=0.7), row=2, col=1)
 
@@ -215,6 +227,7 @@ if ticker_symbol:
             # Configure Global Axis, Titles, Window Scales, and Integrated Tracking Pipeline
             fig.update_layout(
                 title=f"<b>{ticker_symbol} Advanced Technical Dashboard</b>",
+                xaxis_rangeslider_visible=False, # 🌟 REQUIRED: Kills default slider to keep the 4 panels perfectly aligned
                 xaxis4_title="Date",
                 yaxis_title="Price (USD)",
                 yaxis2_title="Volume",
