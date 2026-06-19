@@ -32,9 +32,11 @@ def plot_stock_with_moving_average_and_RSI():
             
         # Computer RSI (Standard 14-day window)
         # Calculate daily price changes
+        # INFO - This line checks how uch money the stock gained or lost compared to the previous calendar day.
         delta = stock_data['Close'].diff()
 
         # Separate gains and losses
+        # INFO - This lower=0/upper=0 separates down days from up days. If a stock went down, its gain value for that day drops to 0 and vice versa.
         gain = delta.clip(lower=0)
         loss = -delta.clip(upper=0)
 
@@ -75,6 +77,7 @@ def plot_stock_with_moving_average_and_RSI():
         ax2.axhline(30, color='green', linestyle='--', alpha=0.6, label='Oversold (30)')
         
         # Shaded area between 30 and 70 represents the normal trading momentum zone
+        # INFO - Creates a subtle light purple backdrop. If the RSI line breaks out of the shaded purple area is can indicate a strong buying or selling frenzy.
         ax2.fill_between(stock_data.index, 30, 70, color='#9467bd', alpha=0.1)
         
         ax2.set_ylabel("RSI Value", fontsize=11)
