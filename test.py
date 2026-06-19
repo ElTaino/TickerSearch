@@ -26,9 +26,9 @@ if ticker_symbol:
         if stock_data.empty:
             st.error("Invalid ticker symbol or no data found for this period.")
         else:
-            # 🌟 FIX: Drop the multi-index ticker level so columns become flat strings again
+            # 🌟 FIX: Force all columns out of MultiIndex into flat strings
             if isinstance(stock_data.columns, pd.MultiIndex):
-                stock_data.columns = stock_data.columns.droplevel('Ticker')
+                stock_data.columns = [col[0] for col in stock_data.columns.values]
             
     # Mathematical RSI Calculations continue normally below...
 
