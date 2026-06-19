@@ -3,6 +3,8 @@ import yfinance as yf
 from plotly.subplots import make_subplots
 import plotly.graph_objects as go
 
+#Test COmmit
+
 # Configure the Web Page Layout
 st.set_page_config(page_title="Stock Analytics Dashboard", layout="wide")
 st.title("📈 Interactive Technical Analysis Dashboard")

@@ -102,10 +102,8 @@ if ticker_symbol:
             plt.tight_layout()
             
             # Hand the matplotlib figure off to Streamlit to display inside the browser
-            #st.pyplot(fig)
-            st.plotly_chart(fig, use_container_width=True)
-            #st.plotly_chart()
-            
+            st.pyplot(fig)
+                        
             # Optional raw spreadsheet inspector inside the webpage UI
             if st.checkbox("Show Data Log Table"):
                 st.subheader("Raw Data Stream Inspect")
