@@ -102,6 +102,9 @@ time_period = st.sidebar.selectbox("Data Time Horizon", options=["1mo", "3mo", "
 
 # 🌟 ADDED: User control toggle for chart type selection
 chart_type = st.sidebar.radio("Main Chart Style", options=["Line", "Candlestick"], index=1)
+show_ma20 = st.sidebar.radio("Show 20-Day MA", options=["Yes", "No"], index=1)
+show_ma50 = st.sidebar.radio("Show 50-Day MA", options=["Yes", "No"], index=1)
+show_bollinger = st.sidebar.radio("Show Bollinger Bands", options=["Yes", "No"], index=1)
 
 rsi_window = st.sidebar.slider("RSI Lookback Window (Days)", min_value=5, max_value=30, value=14)
 bb_window = st.sidebar.slider("Bollinger Bands Window (Days)", min_value=10, max_value=50, value=20)
@@ -212,15 +215,19 @@ if ticker_symbol:
                     increasing_line_color='#2ca02c',  # Green for up days
                     decreasing_line_color='#d62728'   # Red for down days
                 ), row=1, col=1)
-            
+
             # Moving Average Overlays (Remain visible on top of both styles!)
-            fig.add_trace(go.Scatter(x=dates, y=stock_data['MA20'].values.flatten(), name='20-Day MA', line=dict(color='#ff7f0e', width=1.5)), row=1, col=1)
-            fig.add_trace(go.Scatter(x=dates, y=stock_data['MA50'].values.flatten(), name='50-Day MA', line=dict(color='#2ca02c', width=1.5)), row=1, col=1)
+            if show_ma20 == "Yes":
+              fig.add_trace(go.Scatter(x=dates, y=stock_data['MA20'].values.flatten(), name='20-Day MA', line=dict(color='#ff7f0e', width=1.5)), row=1, col=1)
+
+            if show_ma50 == "Yes":
+              fig.add_trace(go.Scatter(x=dates, y=stock_data['MA50'].values.flatten(), name='50-Day MA', line=dict(color='#2ca02c', width=1.5)), row=1, col=1)
 
             # Bollinger Bands Lines
-            fig.add_trace(go.Scatter(x=dates, y=stock_data['BB_Upper'].values.flatten(), name='BB Upper', line=dict(color='#bcbd22', width=1, dash='dash'), legendgroup="bb"), row=1, col=1)
-            fig.add_trace(go.Scatter(x=dates, y=stock_data['BB_Middle'].values.flatten(), name='BB Middle', line=dict(color='#7f7f7f', width=1, dash='dot'), legendgroup="bb"), row=1, col=1)
-            fig.add_trace(go.Scatter(x=dates, y=stock_data['BB_Lower'].values.flatten(), name='BB Lower', line=dict(color='#bcbd22', width=1, dash='dash'), legendgroup="bb"), row=1, col=1)
+            if show_bollinger == "Yes":
+              fig.add_trace(go.Scatter(x=dates, y=stock_data['BB_Upper'].values.flatten(), name='BB Upper', line=dict(color='#bcbd22', width=1, dash='dash'), legendgroup="bb"), row=1, col=1)
+              fig.add_trace(go.Scatter(x=dates, y=stock_data['BB_Middle'].values.flatten(), name='BB Middle', line=dict(color='#7f7f7f', width=1, dash='dot'), legendgroup="bb"), row=1, col=1)
+              fig.add_trace(go.Scatter(x=dates, y=stock_data['BB_Lower'].values.flatten(), name='BB Lower', line=dict(color='#bcbd22', width=1, dash='dash'), legendgroup="bb"), row=1, col=1)
             
             # --- PANEL 2: Volume Bar Graph ---
             fig.add_trace(go.Bar(x=dates, y=volume_values, name='Volume', marker_color=volume_colors, opacity=0.7), row=2, col=1)
