@@ -6,6 +6,7 @@
 #3. Run the python program in the terminal. You might need to run the command "python TickerSearch.py". This will then prompt a ticker symbol (GOOG for example) and then will fetch the information via API with Yahoo Finance. 
 
 #------ SECOND COMMIT ------
+# Will be showing a visual of the stocks in a graph
 #1. In CMD run the command pip install matplotlib
 
 #----- THIRD COMMIT -----
@@ -13,6 +14,12 @@
 
 #----- FOURTH COMMIT -----
 # Calculating the relative strength index (RSI). Its a momentum oscillator that measures the speed and change of price movements on a scale of 0-100. Can be used by traders to spot market extremes. For example, above 70 can signal the stock is overbought and potentially due for a price drop. Below 30 can signal the stock is oversold and potentially due for a price rebound.
+
+#----- FIFTH COMMIT -----
+# CREATING A NEW CLASS FOR THIS TO NOT MESS WITH THIS ONE TOO MUCH
+# Using the library Streamlist to turn this into a web dashboard interface. Helps turn it into an interactive web app with not much extra code. Doesn't need HTML, CSS, or Javascript and another benefit is that it works natively with matplotlib and yfinance. USA vs Australia tomorrow we're gonna win 4-1 you heard it here first.
+
+#1. In CMD run the command "pip install streamlit yfinance matplotlib pandas"
 import yfinance as yf
 import matplotlib.pyplot as plt
 
@@ -94,7 +101,7 @@ def plot_stock_with_moving_average_and_RSI():
         # Render the window popup showing the chart
         print("Displaying the chart window. Close the window to exit.")
         # INFO - THis command launches a desktop window displaying the interactive vizualization tool. Can zoom in, pan, and save the image directly from the window.
-        plt.show()
+        #plt.show()
         
     except Exception as e:
         print(f"An error occurred while plotting: {e}")
