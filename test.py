@@ -15,42 +15,39 @@ ticker_symbol = st.sidebar.text_input("Stock Ticker Symbol", value="AAPL").upper
 time_period = st.sidebar.selectbox("Data Time Horizon", options=["1mo", "3mo", "6mo", "1y", "2y"], index=2)
 rsi_window = st.sidebar.slider("RSI Lookback Window (Days)", min_value=5, max_value=30, value=14)
 
-
 # Main Application Logic
 if ticker_symbol:
     try:
         # Fetch Data via API
         with st.spinner(f"Loading market metrics for {ticker_symbol}..."):
-          stock_data = yf.download(ticker_symbol, period=time_period, interval="1d")
+            # 🌟 ULTIMATE FIX: auto_adjust=True forces yfinance to drop the nested MultiIndex tuples entirely
+            stock_data = yf.download(ticker_symbol, period=time_period, interval="1d", auto_adjust=True)
 
         if stock_data.empty:
             st.error("Invalid ticker symbol or no data found for this period.")
         else:
-            # 🌟 FIX: Force all columns out of MultiIndex into flat strings
-            if isinstance(stock_data.columns, pd.MultiIndex):
-                stock_data.columns = [col[0] for col in stock_data.columns.values]
+            # Clean extraction arrays to guarantee single-dimension vectors for Plotly
+            dates = stock_data.index
+            close_prices = stock_data['Close'].values.flatten()
             
-    # Mathematical RSI Calculations continue normally below...
-
             # Mathematical RSI Calculations
-            delta = stock_data['Close'].diff()
+            delta = pd.Series(close_prices).diff()
             gain = delta.clip(lower=0)
             loss = -delta.clip(upper=0)
             
-            # Using simple rolling window for Streamlit
             avg_gain = gain.rolling(window=rsi_window).mean()
             avg_loss = loss.rolling(window=rsi_window).mean()
             
             rs = avg_gain / avg_loss
             stock_data['RSI'] = 100 - (100 / (1 + rs))
 
-            # Calculate the moving averages using PANDAS rolling math
-            stock_data['MA20'] = stock_data['Close'].rolling(window=20).mean()
-            stock_data['MA50'] = stock_data['Close'].rolling(window=50).mean()
+            # Calculate the moving averages using flat vectors
+            stock_data['MA20'] = pd.Series(close_prices).rolling(window=20).mean().values
+            stock_data['MA50'] = pd.Series(close_prices).rolling(window=50).mean().values
 
-            # Display high-level metric cards on the website layout
-            latest_price = float(stock_data['Close'].iloc[-1])
-            price_change = float(stock_data['Close'].iloc[-1] - stock_data['Close'].iloc[-2])
+            # Safely parse metric values out of single-element values
+            latest_price = float(close_prices[-1])
+            price_change = float(close_prices[-1] - close_prices[-2])
             
             col1, col2 = st.columns(2)
             col1.metric(label=f"Current {ticker_symbol} Closing Price", value=f"${latest_price:,.2f}", delta=f"${price_change:,.2f}")
@@ -61,17 +58,13 @@ if ticker_symbol:
                             delta="Overbought Zone" if latest_rsi >= 70 else "Oversold Zone" if latest_rsi <= 30 else "Normal Momentum")
 
             # --- PLOTLY INTERACTIVE ENGINE GENERATION ---
-            # Create a 2 panel visual layout with a shared timeline X-axis (replaces plt.subplots)
             fig = make_subplots(rows=2, cols=1, shared_xaxes=True, 
                                 vertical_spacing=0.05, 
                                 row_heights=[0.7, 0.3])
             
-            # Cleanly extract pandas index and series data
-            dates = stock_data.index
-            close_prices = stock_data['Close'].squeeze()
-            ma20_prices = stock_data['MA20'].squeeze()
-            ma50_prices = stock_data['MA50'].squeeze()
-            rsi_values = stock_data['RSI'].squeeze()
+            ma20_prices = stock_data['MA20'].values.flatten()
+            ma50_prices = stock_data['MA50'].values.flatten()
+            rsi_values = stock_data['RSI'].values.flatten()
 
             # --- TOP PANEL: Main Price Chart with Moving Averages ---
             fig.add_trace(go.Scatter(x=dates, y=close_prices, name='Actual Close Price', line=dict(color='#1f77b4', width=1.5)), row=1, col=1)
@@ -84,11 +77,9 @@ if ticker_symbol:
             # Add horizontal baseline markers at 30 (Oversold) and 70 (Overbought)
             fig.add_hline(y=70, line_dash="dash", line_color="red", opacity=0.6, row=2, col=1)
             fig.add_hline(y=30, line_dash="dash", line_color="green", opacity=0.6, row=2, col=1)
-            
-            # Add the shaded area between 30 and 70 for RSI
             fig.add_hrect(y0=30, y1=70, fillcolor="#9467bd", opacity=0.08, layer="below", line_width=0, row=2, col=1)
             
-            # Configure Layout Settings, Styling, and Consolidated Mouse Hover Tracking Mechanics
+            # Configure Layout Settings and Unified Hover Mechanics
             fig.update_layout(
                 title=f"<b>{ticker_symbol} Advanced Technical Dashboard</b>",
                 xaxis2_title="Date",
@@ -96,12 +87,12 @@ if ticker_symbol:
                 yaxis2_title="RSI Value",
                 yaxis2_range=[10, 90],
                 height=600,
-                hovermode="x unified",  # <-- THIS CRITICAL LINE CONSOLIDATES HOVER TRACKING VALUES ON YOUR MOUSE
+                hovermode="x unified",
                 legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
                 margin=dict(l=50, r=30, t=80, b=50)
             )
             
-            # Hand the reactive plotly layout engine frame directly to Streamlit instead of st.pyplot
+            # Hand the functional plot directly to Streamlit
             st.plotly_chart(fig, use_container_width=True)
             
             # Optional raw spreadsheet inspector inside the webpage UI
