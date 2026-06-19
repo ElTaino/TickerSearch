@@ -67,7 +67,9 @@ if ticker_symbol:
             # 4. MACD Calculations (12-Day EMA, 26-Day EMA, 9-Day Signal)
             ema12 = pd.Series(close_prices).ewm(span=12, adjust=False).mean()
             ema26 = pd.Series(close_prices).ewm(span=26, adjust=False).mean()
+            print(f"Data length going into EMAs: {len(close_prices)}")
             stock_data['MACD'] = (ema12 - ema26).values
+            
             stock_data['MACD_Signal'] = pd.Series(stock_data['MACD']).ewm(span=9, adjust=False).mean().values
             stock_data['MACD_Hist'] = (stock_data['MACD'] - stock_data['MACD_Signal']).values
 
@@ -76,6 +78,11 @@ if ticker_symbol:
 
             # 6. Advanced Color Coding for MACD Histogram (Matches TradingView professional aesthetics)
             macd_hist = stock_data['MACD_Hist'].values.flatten()
+
+            if len(stock_data) > 5:
+              print("--- EMA MATHEMATICS VERIFICATION ---")
+              print("Last 5 rows of EMA 12:\n", ema12.tail(5).values)
+              print("Last 5 rows of EMA 26:\n", ema26.tail(5).values)
             macd_colors = []
             for i in range(len(macd_hist)):
                 if macd_hist[i] >= 0:
