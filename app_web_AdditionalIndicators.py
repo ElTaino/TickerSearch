@@ -107,7 +107,7 @@ if ticker_symbol:
                 yaxis_title="Price (USD)",
                 yaxis2_title="Volume",
                 yaxis3_title="RSI Value",
-                yaxis3_range=,
+                yaxis3_range=[10, 90],
                 height=800, # Expanded canvas height to cleanly hold all 3 graphs
                 hovermode="x unified", # Locks single tracker vertical bar across all 3 charts
                 legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
