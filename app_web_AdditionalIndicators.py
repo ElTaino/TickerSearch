@@ -3,13 +3,16 @@ import yfinance as yf
 from plotly.subplots import make_subplots
 import plotly.graph_objects as go
 
+#Test COmmit
+
 # Configure the Web Page Layout
 # Test Git Commit after Clone
 st.set_page_config(page_title="Stock Analytics Dashboard", layout="wide")
 st.title("📈 Advanced Technical Analysis Dashboard")
 st.markdown("This web app fetches live stock data from Yahoo Finance and calculates multiple real-time technical indicators.")
-
+test = 0.0
 # Build Sidebar User Inputs
+# Test Commit Master
 st.sidebar.header("Dashboard Configuration")
 ticker_symbol = st.sidebar.text_input("Stock Ticker Symbol", value="AAPL").upper()
 time_period = st.sidebar.selectbox("Data Time Horizon", options=["1mo", "3mo", "6mo", "1y", "2y"], index=2)

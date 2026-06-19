@@ -101,7 +101,7 @@ def plot_stock_with_moving_average_and_RSI():
         # Render the window popup showing the chart
         print("Displaying the chart window. Close the window to exit.")
         # INFO - THis command launches a desktop window displaying the interactive vizualization tool. Can zoom in, pan, and save the image directly from the window.
-        #plt.show()
+        plt.show()
         
     except Exception as e:
         print(f"An error occurred while plotting: {e}")
